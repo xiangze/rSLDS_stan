@@ -17,5 +17,6 @@ if __name__ == '__main__':
     x0=[0.2,0.2,0.1]
     out=Lorenz(x0,10000)
     out=np.array(out).T
+    out=out[:,::10]
     np.savetxt("data.csv",out.T,delimiter=",")    
 
