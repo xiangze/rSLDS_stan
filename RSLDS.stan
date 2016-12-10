@@ -13,16 +13,16 @@ data{
 }
 
 parameters{
-  	cov_matrix[M] A[K];
-	//  	cov_matrix[M] C[K];
+  	matrix[M,M] A[K];
+	//  	matrix[M] C[K];
 	vector [K] C;
 	vector [M] R[K];
 	vector [M] b[K];
 	vector [K] r;
 	vector [M] x[N];
-	matrix [M,M] q;
+	cov_matrix [M] q;
 	real d[K];
-	real s;//matrix [M,M] s;
+	real <lower=0> s;//matrix [M,M] s;
 }
 
 
@@ -30,11 +30,14 @@ model{
   matrix[M,M] scale;
   vector [K] z;
   scale<-diag_matrix(rep_vector(1.0,M)); 
-  for(j in 1:M){
+/*
+for(j in 1:K){
     A[j]~inv_wishart(M,scale);
     //    C[j]~inv_wishart(M,scale);
   }
-
+*/
+  q~inv_wishart(M,scale);
+  
   for(t in 1:T){
   for(i in 2:N){
       for(k in 1:K){
