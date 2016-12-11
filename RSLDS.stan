@@ -20,29 +20,29 @@ parameters{
 	vector [M] b[K];
 	vector [K] r;
 	vector [M] x[N];
-	cov_matrix [M] q;
 	real d[K];
 	real <lower=0> s;//matrix [M,M] s;
+	cholesky_factor_corr[M] corr_ch;	
+	vector<lower=0> [M] sv;
+}
+transformed parameters{
+  cholesky_factor_cov[M] cov_ch;			
+  cov_ch<-diag_pre_multiply(sv,corr_ch);	
 }
 
-
 model{
-  matrix[M,M] scale;
   vector [K] z;
-  scale<-diag_matrix(rep_vector(1.0,M)); 
-/*
-for(j in 1:K){
-    A[j]~inv_wishart(M,scale);
-    //    C[j]~inv_wishart(M,scale);
+
+  for(j in 1:K){
+    sv[j]~student_t(4,0,200);
   }
-*/
-  q~inv_wishart(M,scale);
-  
+
+  corr_ch~lkj_corr_cholesky(2);
   for(t in 1:T){
   for(i in 2:N){
       for(k in 1:K){
-	lp__<-lp__+log(z[k])+multi_normal_log(x[i],A[k]*x[i-1]+b[k],q) ;
-	lp__<-lp__+log(z[k])+normal_log(y[i,t],C[k]*x[i]+d[k]  ,s) ;
+	target+=log(z[k])+multi_normal_cholesky_lpdf(x[i]|A[k]*x[i-1]+b[k],cov_ch) ;
+	target+=log(z[k])+normal_lpdf(y[i,t]|C[k]*x[i]+d[k],s) ;
       }
 
       z[1]<-sigmoid(dot_product(R[1],x[i])+r[1]);
@@ -52,7 +52,7 @@ for(j in 1:K){
 	  z[k]<-z[k]+sigmoid(-(dot_product(R[kp],x[i])+r[kp]));
 	}
       }
-      lp__<-lp__+log_sum_exp(log(z));
+      target+=log_sum_exp(log(z));	
   }	
   }
 }
