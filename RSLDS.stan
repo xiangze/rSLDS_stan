@@ -9,6 +9,7 @@ data{
 	int N;
 	int M;
 	int K;
+	int Nu;
 	vector [T] y[N];
 }
 
@@ -36,8 +37,8 @@ model{
   for(j in 1:K){
     sv[j]~student_t(4,0,200);
   }
-
-  corr_ch~lkj_corr_cholesky(2);
+  s~student_t(4,0,200);	
+  corr_ch~lkj_corr_cholesky(Nu);
   for(t in 1:T){
   for(i in 2:N){
       for(k in 1:K){
@@ -45,11 +46,11 @@ model{
 	target+=log(z[k])+normal_lpdf(y[i,t]|C[k]*x[i]+d[k],s) ;
       }
 
-      z[1]<-sigmoid(dot_product(R[1],x[i])+r[1]);
+      z[1]=sigmoid(dot_product(R[1],x[i])+r[1]);
       for(k in 2:K){
-	z[k]<-sigmoid(dot_product(R[k],x[i])+r[k]);
+	z[k]=sigmoid(dot_product(R[k],x[i])+r[k]);
 	for(kp in k:K){
-	  z[k]<-z[k]+sigmoid(-(dot_product(R[kp],x[i])+r[kp]));
+	  z[k]=z[k]+sigmoid(-(dot_product(R[kp],x[i])+r[kp]));
 	}
       }
       target+=log_sum_exp(log(z));	
