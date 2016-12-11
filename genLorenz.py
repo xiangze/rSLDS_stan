@@ -28,11 +28,9 @@ if __name__ == '__main__':
     out=np.array(out)
     print out.shape
     out=out[::10,:]
-#    out=out[::10,:]
+    np.savetxt("data_source.csv",out,delimiter=",")
 
-    obs=[]
-    for on in out:    
-        obs.append([bernoulli.rvs(sigmoid(on[0])) for j in xrange(obsnum)])
+    obs=[[bernoulli.rvs(sigmoid(on[0])) for j in xrange(obsnum)] for on in out]
     obs=np.array(obs)
     np.savetxt("data.csv",obs,delimiter=",")    
 
