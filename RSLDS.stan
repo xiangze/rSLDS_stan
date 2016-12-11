@@ -49,7 +49,7 @@ for(j in 1:K){
       for(k in 2:K){
 	z[k]<-sigmoid(dot_product(R[k],x[i])+r[k]);
 	for(kp in k:K){
-	  z[k]<-z[k]+sigmoid(-(dot_product(R[k],x[i])+r[k]));
+	  z[k]<-z[k]+sigmoid(-(dot_product(R[kp],x[i])+r[kp]));
 	}
       }
       lp__<-lp__+log_sum_exp(log(z));
