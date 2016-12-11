@@ -13,9 +13,10 @@ M=3
 K=2
 
 data={"T":T,"N":N,"M":M,"K":K,"y":y}
-fit= smodel.sampling(data, iter=31000, warmup=1000, thin=10, chains=3, seed=71)
+fit= smodel.vb(data=data,seed=71)
 res=fit.extract()
 print res   
 
 import draws
 draws.drawline()
+
