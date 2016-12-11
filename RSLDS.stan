@@ -49,7 +49,7 @@ model{
       z[1]=sigmoid(dot_product(R[1],x[i])+r[1]);
       for(k in 2:K){
 	z[k]=sigmoid(dot_product(R[k],x[i])+r[k]);
-	for(kp in k:K){
+	for(kp in 1:k){
 	  z[k]=z[k]+sigmoid(-(dot_product(R[kp],x[i])+r[kp]));
 	}
       }
